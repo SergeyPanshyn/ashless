@@ -1,0 +1,33 @@
+build:
+  maxIssues: 0
+
+config:
+  validation: true
+  warningsAsErrors: false
+
+complexity:
+  LongMethod:
+    threshold: 80
+  LongParameterList:
+    functionThreshold: 8
+    constructorThreshold: 8
+  TooManyFunctions:
+    active: false
+
+naming:
+  FunctionNaming:
+    # Allows PascalCase composable function names (ktlint handles this separately)
+    functionPattern: '[a-zA-Z][a-zA-Z0-9]*'
+  # KMP expect/actual files use Platform.{target}.kt naming convention by design
+  MatchingDeclarationName:
+    active: false
+
+style:
+  MagicNumber:
+    active: false
+  ReturnCount:
+    active: false
+  ForbiddenComment:
+    active: false
+  UnusedPrivateMember:
+    active: true

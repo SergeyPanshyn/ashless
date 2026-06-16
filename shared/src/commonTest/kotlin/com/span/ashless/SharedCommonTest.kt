@@ -4,9 +4,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class SharedCommonTest {
-
     @Test
-    fun example() {
+    fun placeholder() {
         assertEquals(3, 1 + 2)
     }
 }

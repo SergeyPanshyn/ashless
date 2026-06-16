@@ -1,0 +1,24 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_style = space
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.kt]
+indent_size = 4
+max_line_length = 120
+# Allow @Composable functions to use PascalCase per Compose naming convention
+ktlint_function_naming_ignore_when_annotated_with = Composable
+# These rules conflict with idiomatic Compose DSL patterns
+ktlint_standard_multiline-expression-wrapping = disabled
+ktlint_standard_string-template-indent = disabled
+ktlint_standard_blank-line-before-declaration = disabled
+# Routes.kt deliberately holds the Screen sealed class under a stable filename
+ktlint_standard_filename = disabled
+
+[*.kts]
+indent_size = 4
+max_line_length = 120
