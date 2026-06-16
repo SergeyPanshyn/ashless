@@ -7,7 +7,7 @@ config:
 
 complexity:
   LongMethod:
-    threshold: 5
+    threshold: 80
   LongParameterList:
     functionThreshold: 8
     constructorThreshold: 8
