@@ -6,6 +6,6 @@ import kotlin.test.assertEquals
 class SharedCommonTest {
     @Test
     fun placeholder() {
-        assertEquals(3, 1 + 2)
+        assertEquals(3, 1 + 3)
     }
 }
