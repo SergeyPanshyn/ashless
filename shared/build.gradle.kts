@@ -3,9 +3,10 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidMultiplatformLibrary)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.ksp)
     alias(libs.plugins.ktlintGradle)
     alias(libs.plugins.detekt)
 }
@@ -32,31 +33,30 @@ afterEvaluate {
 }
 
 kotlin {
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "Shared"
-            isStatic = true
+    compilerOptions {
+        freeCompilerArgs.addAll("-opt-in=kotlin.uuid.ExperimentalUuidApi", "-Xexpect-actual-classes")
+    }
+
+    // iOS targets are declared for future use but disabled when Xcode is unavailable.
+    // CMP 1.11.1 K/N klibs require Kotlin 2.3.x; re-enable once KSP supports 2.3.x.
+    val iosEnabled = providers.gradleProperty("ios.enabled").map { it.toBoolean() }.getOrElse(false)
+    if (iosEnabled) {
+        listOf(
+            iosArm64(),
+            iosSimulatorArm64(),
+        ).forEach { iosTarget ->
+            iosTarget.binaries.framework {
+                baseName = "Shared"
+                isStatic = true
+            }
         }
     }
 
     jvm()
 
-    androidLibrary {
-        namespace = "com.span.ashless.shared"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
-
+    androidTarget {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_11
-        }
-        androidResources {
-            enable = true
-        }
-        withHostTest {
-            isIncludeAndroidResources = true
         }
     }
 
@@ -64,9 +64,9 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.compose.runtime)
             implementation(libs.compose.foundation)
-            implementation(libs.compose.material3)
+            implementation(compose.material3)
+            implementation(compose.materialIconsExtended)
             implementation(libs.compose.ui)
-            implementation(libs.compose.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation(libs.androidx.room.runtime)
@@ -82,12 +82,34 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.turbine)
+            implementation(libs.kotlinx.coroutines.test)
+        }
+        jvmTest.dependencies {
+            implementation(libs.kotlin.test)
+            implementation(libs.turbine)
+            implementation(libs.kotlinx.coroutines.test)
+            implementation(libs.kotlinx.datetime)
         }
     }
 }
 
+android {
+    namespace = "com.span.ashless.shared"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
+    }
+}
+
 dependencies {
-    androidRuntimeClasspath(libs.compose.uiTooling)
+    debugImplementation(libs.compose.uiTooling)
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspJvm", libs.androidx.room.compiler)
 }
 
 val detektAll by tasks.registering(Detekt::class) {
@@ -108,9 +130,5 @@ tasks.named("check") {
     dependsOn(detektAll)
 }
 
-// iOS tests require Xcode. Set ios.tests.enabled=true in gradle.properties when Xcode is available.
-val iosTestsEnabled = providers.gradleProperty("ios.tests.enabled").map { it.toBoolean() }.getOrElse(false)
-if (!iosTestsEnabled) {
-    tasks.matching { t -> t.name.contains("linkDebugTestIos") || t.name.contains("iosSimulatorArm64Test") }
-        .configureEach { enabled = false }
-}
+// iOS targets disabled until KSP supports Kotlin 2.3.x (CMP 1.11.1 K/N ABI requirement).
+// Enable via gradle.property ios.enabled=true once constraints are resolved.
