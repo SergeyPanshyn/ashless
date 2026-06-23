@@ -6,4 +6,5 @@ data class ProgramProgressUiState(
     val nextWeekLabel: String = "",
     val goalLabel: String = "",
     val goalDateLabel: String = "",
+    val showCancelConfirm: Boolean = false,
 )

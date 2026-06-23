@@ -15,6 +15,8 @@ class ProgramRepositoryImpl(private val dataSource: ProgramDataSource) : Program
         dataSource.upsert(program.toEntity())
     }
 
+    override suspend fun cancelActive() = dataSource.deactivateAll()
+
     override fun observeActiveProgram(): Flow<Program?> = dataSource.observeActiveProgram().map { it?.toDomain() }
 }
 

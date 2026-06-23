@@ -10,6 +10,7 @@ import com.span.ashless.domain.reduction.LinearWeeklyStepDownStrategy
 import com.span.ashless.domain.reduction.ReductionStrategyRegistry
 import com.span.ashless.domain.repository.EntryRepository
 import com.span.ashless.domain.repository.ProgramRepository
+import com.span.ashless.domain.usecase.CancelProgram
 import com.span.ashless.domain.usecase.CreateProgram
 import com.span.ashless.domain.usecase.DeleteEntry
 import com.span.ashless.domain.usecase.LogCigarette
@@ -39,6 +40,7 @@ val domainModule = module {
     factory { DeleteEntry(get()) }
     factory { ObserveTodayState(get(), get(), get()) }
     factory { CreateProgram(get()) }
+    factory { CancelProgram(get()) }
     factory { ObserveProgramProgress(get(), get()) }
     factory { ObserveHistory(get()) }
     factory { ObserveStats(get(), get(), get()) }
@@ -47,7 +49,7 @@ val domainModule = module {
 val presentationModule = module {
     viewModel { TodayViewModel(get(), get(), get()) }
     viewModel { ProgramSetupViewModel(get()) }
-    viewModel { ProgramProgressViewModel(get()) }
+    viewModel { ProgramProgressViewModel(get(), get()) }
     viewModel { HistoryViewModel(get(), get()) }
     viewModel { StatsViewModel(get()) }
 }
