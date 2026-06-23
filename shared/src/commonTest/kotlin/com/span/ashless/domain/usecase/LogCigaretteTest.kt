@@ -5,12 +5,16 @@ import com.span.ashless.domain.repository.EntryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
+import kotlinx.datetime.Instant
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.uuid.Uuid
 
 class LogCigaretteTest {
-    private val fakeEntry = CigaretteEntry(id = "abc", timestampMs = 1_000L)
+    private val fakeId = Uuid.parse("00000000-0000-0000-0000-000000000001")
+    private val fakeEntry = CigaretteEntry(id = fakeId, smokedAt = Instant.fromEpochMilliseconds(1_000L))
+
     private val repo = object : EntryRepository {
         var logCalled = 0
 
@@ -19,7 +23,7 @@ class LogCigaretteTest {
             return fakeEntry
         }
 
-        override suspend fun delete(id: String) = Unit
+        override suspend fun delete(id: Uuid) = Unit
 
         override fun observeTodayEntries(): Flow<List<CigaretteEntry>> = flowOf(emptyList())
     }

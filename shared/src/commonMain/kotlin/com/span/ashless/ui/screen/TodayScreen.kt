@@ -45,20 +45,29 @@ private const val RING_STROKE_DP = 20f
 private const val RING_SIZE_DP = 280f
 
 // Color lookup table — pure mapping, no logic
-private fun TodayStatusStyle.ringColor(s: AshlessStatusColors, primary: Color): Color = when (this) {
-    TodayStatusStyle.ON_TRACK -> primary
-    TodayStatusStyle.OVER_LIMIT -> s.overLimitText
-}
+private fun TodayStatusStyle.ringColor(
+    s: AshlessStatusColors,
+    primary: Color,
+): Color =
+    when (this) {
+        TodayStatusStyle.ON_TRACK -> primary
+        TodayStatusStyle.OVER_LIMIT -> s.overLimitText
+        TodayStatusStyle.NO_PROGRAM -> primary.copy(alpha = 0.3f)
+    }
 
-private fun TodayStatusStyle.chipBackground(s: AshlessStatusColors): Color = when (this) {
-    TodayStatusStyle.ON_TRACK -> s.onTrackContainer
-    TodayStatusStyle.OVER_LIMIT -> s.overLimitContainer
-}
+private fun TodayStatusStyle.chipBackground(s: AshlessStatusColors): Color =
+    when (this) {
+        TodayStatusStyle.ON_TRACK -> s.onTrackContainer
+        TodayStatusStyle.OVER_LIMIT -> s.overLimitContainer
+        TodayStatusStyle.NO_PROGRAM -> s.onTrackContainer.copy(alpha = 0.4f)
+    }
 
-private fun TodayStatusStyle.chipTextColor(s: AshlessStatusColors): Color = when (this) {
-    TodayStatusStyle.ON_TRACK -> s.onTrackText
-    TodayStatusStyle.OVER_LIMIT -> s.overLimitText
-}
+private fun TodayStatusStyle.chipTextColor(s: AshlessStatusColors): Color =
+    when (this) {
+        TodayStatusStyle.ON_TRACK -> s.onTrackText
+        TodayStatusStyle.OVER_LIMIT -> s.overLimitText
+        TodayStatusStyle.NO_PROGRAM -> s.onTrackText.copy(alpha = 0.6f)
+    }
 
 @Composable
 fun TodayScreen(
@@ -85,6 +94,14 @@ fun TodayScreen(
             background = state.statusStyle.chipBackground(statusColors),
             textColor = state.statusStyle.chipTextColor(statusColors),
         )
+        if (state.footerText.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = state.footerText,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
         Spacer(modifier = Modifier.height(48.dp))
         LogArea(buttonState = state.buttonState, onIntent = viewModel::onIntent)
     }

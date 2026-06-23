@@ -7,18 +7,19 @@ import com.span.ashless.domain.model.CigaretteEntry
 import com.span.ashless.domain.repository.EntryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
+import kotlin.time.Clock
 import kotlin.uuid.Uuid
 
 class EntryRepositoryImpl(private val dataSource: EntryDataSource) : EntryRepository {
     override suspend fun log(): CigaretteEntry {
-        val timestampMs = Clock.System.now().toEpochMilliseconds()
-        val entry = CigaretteEntry(id = Uuid.random().toString(), timestampMs = timestampMs)
-        dataSource.insert(CigaretteEntryEntity(id = entry.id, timestampMs = entry.timestampMs))
-        return entry
+        val id = Uuid.random()
+        val smokedAt = Clock.System.now()
+        dataSource.insert(CigaretteEntryEntity(id = id.toString(), timestampMs = smokedAt.toEpochMilliseconds()))
+        return CigaretteEntry(id = id, smokedAt = smokedAt)
     }
 
-    override suspend fun delete(id: String) = dataSource.deleteById(id)
+    override suspend fun delete(id: Uuid) = dataSource.deleteById(id.toString())
 
     override fun observeTodayEntries(): Flow<List<CigaretteEntry>> {
         val (startMs, endMs) = DayBoundaries.todayRange()
@@ -27,4 +28,8 @@ class EntryRepositoryImpl(private val dataSource: EntryDataSource) : EntryReposi
     }
 }
 
-private fun CigaretteEntryEntity.toDomain() = CigaretteEntry(id = id, timestampMs = timestampMs)
+private fun CigaretteEntryEntity.toDomain() =
+    CigaretteEntry(
+        id = Uuid.parse(id),
+        smokedAt = Instant.fromEpochMilliseconds(timestampMs),
+    )

@@ -2,6 +2,8 @@ package com.span.ashless.presentation.today
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.span.ashless.domain.model.DayStatus
+import com.span.ashless.domain.model.TodayState
 import com.span.ashless.domain.usecase.DeleteEntry
 import com.span.ashless.domain.usecase.LogCigarette
 import com.span.ashless.domain.usecase.ObserveTodayState
@@ -11,10 +13,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Clock
+import kotlin.uuid.Uuid
 
 private const val UNDO_TIMEOUT_MS = 5_000L
 
@@ -22,12 +24,9 @@ class TodayViewModel(
     observeTodayState: ObserveTodayState,
     private val logCigarette: LogCigarette,
     private val deleteEntry: DeleteEntry,
-    private val clock: Clock = Clock.System,
 ) : ViewModel() {
-
-    private var count = 0
-    private val limit = 10
-    private var lastLoggedId: String? = null
+    private var todayState = TodayState()
+    private var lastLoggedId: Uuid? = null
     private var undoTimerJob: Job? = null
 
     private val _state = MutableStateFlow(buildUiState())
@@ -35,8 +34,8 @@ class TodayViewModel(
 
     init {
         viewModelScope.launch {
-            observeTodayState().collect { todayState ->
-                count = todayState.count
+            observeTodayState().collect { state ->
+                todayState = state
                 refreshState()
             }
         }
@@ -53,7 +52,7 @@ class TodayViewModel(
         viewModelScope.launch {
             val entry = logCigarette()
             lastLoggedId = entry.id
-            val ldt = clock.now().toLocalDateTime(TimeZone.currentSystemDefault())
+            val ldt = Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault())
             val timeLabel =
                 "${ldt.hour.toString().padStart(2, '0')}:${ldt.minute.toString().padStart(2, '0')}"
             refreshState(buttonState = LogButtonState.Logged(timeLabel))
@@ -74,7 +73,7 @@ class TodayViewModel(
     private fun scheduleUndoTimeout() {
         undoTimerJob?.cancel()
         undoTimerJob = viewModelScope.launch {
-            delay(UNDO_TIMEOUT_MS.milliseconds)
+            delay(UNDO_TIMEOUT_MS)
             clearUndo()
         }
     }
@@ -89,13 +88,51 @@ class TodayViewModel(
     }
 
     private fun buildUiState(buttonState: LogButtonState = LogButtonState.Idle): TodayUiState {
-        val isOver = count >= limit
-        return TodayUiState(
-            remainingCount = (limit - count).coerceAtLeast(0),
-            ringProgress = (count.toFloat() / limit).coerceIn(0f, 1f),
-            statusStyle = if (isOver) TodayStatusStyle.OVER_LIMIT else TodayStatusStyle.ON_TRACK,
-            statusLabel = if (isOver) "${count - limit} over today" else "On track",
-            buttonState = buttonState,
-        )
+        return when (todayState.status) {
+            DayStatus.NO_PROGRAM -> TodayUiState(
+                remainingCount = todayState.count,
+                ringProgress = 0f,
+                statusStyle = TodayStatusStyle.NO_PROGRAM,
+                statusLabel = "Set up your program",
+                footerText = "",
+                buttonState = buttonState,
+            )
+            DayStatus.UNDER_LIMIT -> {
+                val allowance = todayState.allowance ?: 0
+                TodayUiState(
+                    remainingCount = todayState.remaining ?: 0,
+                    ringProgress = if (allowance > 0) {
+                        (todayState.count.toFloat() / allowance).coerceIn(0f, 1f)
+                    } else {
+                        0f
+                    },
+                    statusStyle = TodayStatusStyle.ON_TRACK,
+                    statusLabel = "On track",
+                    footerText = buildFooterText(),
+                    buttonState = buttonState,
+                )
+            }
+            DayStatus.OVER_LIMIT -> {
+                val allowance = todayState.allowance ?: 0
+                TodayUiState(
+                    remainingCount = 0,
+                    ringProgress = 1f,
+                    statusStyle = TodayStatusStyle.OVER_LIMIT,
+                    statusLabel = "${todayState.count - allowance} over today",
+                    footerText = buildFooterText(),
+                    buttonState = buttonState,
+                )
+            }
+        }
+    }
+
+    private fun buildFooterText(): String {
+        val allowance = todayState.allowance ?: return ""
+        val next = todayState.allowanceNextWeek
+        return if (next != null) {
+            "This week: $allowance/day · next week $next"
+        } else {
+            "This week: $allowance/day"
+        }
     }
 }

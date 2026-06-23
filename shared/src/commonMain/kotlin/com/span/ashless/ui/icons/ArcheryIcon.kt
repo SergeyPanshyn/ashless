@@ -15,11 +15,15 @@ public val ArcheryIcon: ImageVector
         if (_archery != null) {
             return _archery!!
         }
-        _archery = Builder(name = "Archery", defaultWidth = 24.0.dp, defaultHeight = 24.0.dp,
-                viewportWidth = 24.0f, viewportHeight = 24.0f).apply {
-            path(fill = SolidColor(Color(0xFF000000)), stroke = null, strokeLineWidth = 0.0f,
-                    strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
-                    pathFillType = NonZero) {
+        _archery = Builder(
+            name = "Archery", defaultWidth = 24.0.dp, defaultHeight = 24.0.dp,
+            viewportWidth = 24.0f, viewportHeight = 24.0f,
+        ).apply {
+            path(
+                fill = SolidColor(Color(0xFF000000)), stroke = null, strokeLineWidth = 0.0f,
+                strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
+                pathFillType = NonZero,
+            ) {
                 moveToRelative(19.302f, 19.204f)
                 lineToRelative(2.698f, 4.796f)
                 horizontalLineToRelative(-2.294f)
@@ -85,7 +89,7 @@ public val ArcheryIcon: ImageVector
                 close()
             }
         }
-        .build()
+            .build()
         return _archery!!
     }
 

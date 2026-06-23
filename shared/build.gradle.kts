@@ -34,7 +34,11 @@ afterEvaluate {
 
 kotlin {
     compilerOptions {
-        freeCompilerArgs.addAll("-opt-in=kotlin.uuid.ExperimentalUuidApi", "-Xexpect-actual-classes")
+        freeCompilerArgs.addAll(
+            "-opt-in=kotlin.uuid.ExperimentalUuidApi",
+            "-opt-in=kotlin.time.ExperimentalTime",
+            "-Xexpect-actual-classes",
+        )
     }
 
     // iOS targets are declared for future use but disabled when Xcode is unavailable.

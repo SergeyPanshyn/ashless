@@ -18,6 +18,8 @@ ktlint_standard_string-template-indent = disabled
 ktlint_standard_blank-line-before-declaration = disabled
 # Routes.kt deliberately holds the Screen sealed class under a stable filename
 ktlint_standard_filename = disabled
+# ImageVector backing fields use the conventional _name pattern (Compose-generated code)
+ktlint_standard_property-naming = disabled
 
 [*.kts]
 indent_size = 4

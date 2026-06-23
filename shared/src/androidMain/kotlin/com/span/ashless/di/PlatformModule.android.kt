@@ -16,9 +16,11 @@ actual fun platformModule(): Module =
                 context = ctx,
                 name = ctx.getDatabasePath("ashless.db").absolutePath,
             )
+                .fallbackToDestructiveMigration(dropAllTables = true)
                 .setDriver(BundledSQLiteDriver())
                 .setQueryCoroutineContext(Dispatchers.IO)
                 .build()
         }
         single { get<AshlessDatabase>().entryDao() }
+        single { get<AshlessDatabase>().programDao() }
     }

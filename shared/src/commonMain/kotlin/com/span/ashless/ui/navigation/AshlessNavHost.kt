@@ -1,12 +1,10 @@
 package com.span.ashless.ui.navigation
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -57,7 +55,11 @@ fun AshlessNavHost(modifier: Modifier = Modifier) {
                         selected = selectedIndex == index,
                         onClick = { selectedIndex = index },
                         icon = {
-                            Icon(modifier = Modifier.size(24.dp), imageVector = tab.icon, contentDescription = tab.label)
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                imageVector = tab.icon,
+                                contentDescription = tab.label,
+                            )
                         },
                         label = { Text(tab.label) },
                     )

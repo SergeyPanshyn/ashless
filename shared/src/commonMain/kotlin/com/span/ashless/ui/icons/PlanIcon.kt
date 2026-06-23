@@ -12,14 +12,20 @@ import androidx.compose.ui.unit.dp
 
 public val PlanIcon: ImageVector
     get() {
-        if (`_calendar-day` != null) {
-            return `_calendar-day`!!
+        if (_calendarDay != null) {
+            return _calendarDay!!
         }
-        `_calendar-day` = Builder(name = "Calendar-day", defaultWidth = 512.0.dp, defaultHeight =
-                512.0.dp, viewportWidth = 24.0f, viewportHeight = 24.0f).apply {
-            path(fill = SolidColor(Color(0xFF000000)), stroke = null, strokeLineWidth = 0.0f,
-                    strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
-                    pathFillType = NonZero) {
+        _calendarDay = Builder(
+            name = "Calendar-day", defaultWidth = 512.0.dp,
+            defaultHeight =
+                512.0.dp,
+            viewportWidth = 24.0f, viewportHeight = 24.0f,
+        ).apply {
+            path(
+                fill = SolidColor(Color(0xFF000000)), stroke = null, strokeLineWidth = 0.0f,
+                strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
+                pathFillType = NonZero,
+            ) {
                 moveToRelative(8.0f, 12.0f)
                 horizontalLineToRelative(-2.0f)
                 curveToRelative(-1.103f, 0.0f, -2.0f, 0.897f, -2.0f, 2.0f)
@@ -74,9 +80,8 @@ public val PlanIcon: ImageVector
                 close()
             }
         }
-        .build()
-        return `_calendar-day`!!
+            .build()
+        return _calendarDay!!
     }
 
-private var `_calendar-day`: ImageVector? = null
-
+private var _calendarDay: ImageVector? = null

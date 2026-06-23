@@ -1,10 +1,5 @@
 package com.span.ashless.ui.icons
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType.Companion.NonZero
 import androidx.compose.ui.graphics.SolidColor
@@ -14,18 +9,21 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.ImageVector.Builder
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.unit.dp
-import kotlin.Unit
 
 public val HomeIcon: ImageVector
     get() {
         if (_home != null) {
             return _home!!
         }
-        _home = Builder(name = "Home", defaultWidth = 512.0.dp, defaultHeight = 512.0.dp,
-                viewportWidth = 24.0f, viewportHeight = 24.0f).apply {
-            path(fill = SolidColor(Color(0xFF000000)), stroke = null, strokeLineWidth = 0.0f,
-                    strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
-                    pathFillType = NonZero) {
+        _home = Builder(
+            name = "Home", defaultWidth = 512.0.dp, defaultHeight = 512.0.dp,
+            viewportWidth = 24.0f, viewportHeight = 24.0f,
+        ).apply {
+            path(
+                fill = SolidColor(Color(0xFF000000)), stroke = null, strokeLineWidth = 0.0f,
+                strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
+                pathFillType = NonZero,
+            ) {
                 moveTo(23.121f, 9.069f)
                 lineTo(15.536f, 1.483f)
                 arcToRelative(5.008f, 5.008f, 0.0f, false, false, -7.072f, 0.0f)
@@ -60,7 +58,7 @@ public val HomeIcon: ImageVector
                 close()
             }
         }
-        .build()
+            .build()
         return _home!!
     }
 
