@@ -13,8 +13,10 @@ import com.span.ashless.domain.repository.ProgramRepository
 import com.span.ashless.domain.usecase.CreateProgram
 import com.span.ashless.domain.usecase.DeleteEntry
 import com.span.ashless.domain.usecase.LogCigarette
+import com.span.ashless.domain.usecase.ObserveHistory
 import com.span.ashless.domain.usecase.ObserveProgramProgress
 import com.span.ashless.domain.usecase.ObserveTodayState
+import com.span.ashless.presentation.history.HistoryViewModel
 import com.span.ashless.presentation.program.ProgramProgressViewModel
 import com.span.ashless.presentation.program.ProgramSetupViewModel
 import com.span.ashless.presentation.today.TodayViewModel
@@ -36,12 +38,14 @@ val domainModule = module {
     factory { ObserveTodayState(get(), get(), get()) }
     factory { CreateProgram(get()) }
     factory { ObserveProgramProgress(get(), get()) }
+    factory { ObserveHistory(get()) }
 }
 
 val presentationModule = module {
     viewModel { TodayViewModel(get(), get(), get()) }
     viewModel { ProgramSetupViewModel(get()) }
     viewModel { ProgramProgressViewModel(get()) }
+    viewModel { HistoryViewModel(get(), get()) }
 }
 
 expect fun platformModule(): Module

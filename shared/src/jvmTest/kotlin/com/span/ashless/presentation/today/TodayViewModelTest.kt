@@ -18,6 +18,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -141,6 +142,8 @@ private class FakeEntryRepository(
     override suspend fun delete(id: Uuid) = onDelete(id)
 
     override fun observeTodayEntries(): Flow<List<CigaretteEntry>> = flowOf(emptyList())
+
+    override fun observeEntriesSince(from: Instant): Flow<List<CigaretteEntry>> = flowOf(emptyList())
 }
 
 private class FakeProgramRepository : ProgramRepository {

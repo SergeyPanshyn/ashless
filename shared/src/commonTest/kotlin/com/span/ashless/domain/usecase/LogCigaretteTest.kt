@@ -26,6 +26,8 @@ class LogCigaretteTest {
         override suspend fun delete(id: Uuid) = Unit
 
         override fun observeTodayEntries(): Flow<List<CigaretteEntry>> = flowOf(emptyList())
+
+        override fun observeEntriesSince(from: Instant): Flow<List<CigaretteEntry>> = flowOf(emptyList())
     }
 
     @Test
