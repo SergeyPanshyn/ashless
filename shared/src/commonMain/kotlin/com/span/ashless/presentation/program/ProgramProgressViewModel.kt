@@ -20,13 +20,20 @@ class ProgramProgressViewModel(
     init {
         viewModelScope.launch {
             observeProgramProgress().collect { progress ->
-                if (progress == null) return@collect
+                if (progress == null) {
+                    _state.value = ProgramProgressUiState()
+                    return@collect
+                }
                 _state.update { current ->
                     current.copy(
                         weekLabel = "Week ${progress.weekCurrent} of ${progress.weekTotal}",
                         allowanceLabel = "${progress.allowanceToday} per day this week",
                         nextWeekLabel = progress.allowanceNextWeek?.let { "Next week: $it/day" } ?: "",
-                        goalLabel = if (progress.targetPerDay == 0) "Goal: Quit" else "Goal: ${progress.targetPerDay}/day",
+                        goalLabel = if (progress.targetPerDay == 0) {
+                            "Goal: Quit"
+                        } else {
+                            "Goal: ${progress.targetPerDay}/day"
+                        },
                         goalDateLabel = "Target: ${progress.goalDate}",
                     )
                 }

@@ -149,6 +149,8 @@ private class FakeEntryRepository(
 private class FakeProgramRepository : ProgramRepository {
     override suspend fun save(program: Program) = Unit
 
+    override suspend fun cancelActive() = Unit
+
     override fun observeActiveProgram(): Flow<Program?> =
         flowOf(
             Program(
