@@ -11,8 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.span.ashless.presentation.stats.BarData
+import com.span.ashless.presentation.stats.StatsIntent
 import com.span.ashless.presentation.stats.StatsUiState
 import com.span.ashless.presentation.stats.StatsViewModel
 import com.span.ashless.presentation.stats.SummaryCard
@@ -46,11 +52,50 @@ fun StatsScreen(
             .padding(horizontal = 24.dp, vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-        Text("Last 7 days", style = MaterialTheme.typography.titleLarge)
+        WeekNavigator(
+            label = state.weekLabel,
+            canGoNext = state.canGoNext,
+            onPrevious = { viewModel.onIntent(StatsIntent.PreviousWeek) },
+            onNext = { viewModel.onIntent(StatsIntent.NextWeek) },
+        )
         BarChart(bars = state.bars)
         SummaryRow(state = state)
         if (state.programLabel.isNotEmpty()) {
             ProgramBadge(label = state.programLabel)
+        }
+    }
+}
+
+@Composable
+private fun WeekNavigator(
+    label: String,
+    canGoNext: Boolean,
+    onPrevious: () -> Unit,
+    onNext: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        IconButton(onClick = onPrevious) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Previous week",
+            )
+        }
+        Text(label, style = MaterialTheme.typography.titleMedium)
+        IconButton(onClick = onNext, enabled = canGoNext) {
+            Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                contentDescription = "Next week",
+                tint = if (canGoNext) {
+                    MaterialTheme.colorScheme.onSurface
+                } else {
+                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                },
+            )
         }
     }
 }

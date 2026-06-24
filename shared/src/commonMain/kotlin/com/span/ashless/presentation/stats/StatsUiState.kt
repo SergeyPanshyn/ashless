@@ -17,4 +17,6 @@ data class StatsUiState(
     val bars: List<BarData> = emptyList(),
     val summaryCards: List<SummaryCard> = emptyList(),
     val programLabel: String = "",
+    val weekLabel: String = "Last 7 days",
+    val canGoNext: Boolean = false,
 )
