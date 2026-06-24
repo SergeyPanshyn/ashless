@@ -79,10 +79,12 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.kotlinx.datetime)
+            implementation(libs.androidx.datastore.core)
         }
         androidMain.dependencies {
             implementation(libs.compose.uiToolingPreview)
             implementation(libs.koin.android)
+            implementation(libs.androidx.datastore.android)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

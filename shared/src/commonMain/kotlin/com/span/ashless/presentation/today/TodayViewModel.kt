@@ -3,9 +3,11 @@ package com.span.ashless.presentation.today
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.span.ashless.domain.model.DayStatus
+import com.span.ashless.domain.model.PacingTimerState
 import com.span.ashless.domain.model.TodayState
 import com.span.ashless.domain.usecase.DeleteEntry
 import com.span.ashless.domain.usecase.LogCigarette
+import com.span.ashless.domain.usecase.ObservePacingTimer
 import com.span.ashless.domain.usecase.ObserveTodayState
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -24,8 +26,10 @@ class TodayViewModel(
     observeTodayState: ObserveTodayState,
     private val logCigarette: LogCigarette,
     private val deleteEntry: DeleteEntry,
+    observePacingTimer: ObservePacingTimer,
 ) : ViewModel() {
     private var todayState = TodayState()
+    private var pacingTimerState: PacingTimerState = PacingTimerState.Hidden
     private var lastLoggedId: Uuid? = null
     private var undoTimerJob: Job? = null
 
@@ -36,6 +40,12 @@ class TodayViewModel(
         viewModelScope.launch {
             observeTodayState().collect { state ->
                 todayState = state
+                refreshState()
+            }
+        }
+        viewModelScope.launch {
+            observePacingTimer().collect { timerState ->
+                pacingTimerState = timerState
                 refreshState()
             }
         }
@@ -96,6 +106,7 @@ class TodayViewModel(
                 statusStyle = TodayStatusStyle.NO_PROGRAM,
                 statusLabel = "Set up your program",
                 footerText = "",
+                timerText = formatTimer(pacingTimerState),
                 buttonState = buttonState,
             )
             DayStatus.UNDER_LIMIT -> {
@@ -111,6 +122,7 @@ class TodayViewModel(
                     statusStyle = TodayStatusStyle.ON_TRACK,
                     statusLabel = "On track",
                     footerText = buildFooterText(),
+                    timerText = formatTimer(pacingTimerState),
                     buttonState = buttonState,
                 )
             }
@@ -123,6 +135,7 @@ class TodayViewModel(
                     statusStyle = TodayStatusStyle.OVER_LIMIT,
                     statusLabel = "${todayState.count - allowance} over today",
                     footerText = buildFooterText(),
+                    timerText = "",
                     buttonState = buttonState,
                 )
             }
@@ -138,4 +151,25 @@ class TodayViewModel(
             "This week: $allowance/day"
         }
     }
+
+    private fun formatTimer(state: PacingTimerState): String =
+        when (state) {
+            is PacingTimerState.Countdown -> {
+                val h = state.minutesRemaining / 60
+                val m = state.minutesRemaining % 60
+                if (h > 0) "Next in: ${h}h ${m}m" else "Next in: ${m}m"
+            }
+            is PacingTimerState.WindowOpen -> {
+                val h = state.minutesSinceLast / 60
+                val m = state.minutesSinceLast % 60
+                val elapsed = if (h > 0) "${h}h ${m}m ago" else "${m}m ago"
+                "Window open · $elapsed"
+            }
+            is PacingTimerState.ElapsedAwareness -> {
+                val h = state.minutesSinceLast / 60
+                val m = state.minutesSinceLast % 60
+                if (h > 0) "Last: ${h}h ${m}m ago" else "Last: ${m}m ago"
+            }
+            PacingTimerState.Hidden -> ""
+        }
 }

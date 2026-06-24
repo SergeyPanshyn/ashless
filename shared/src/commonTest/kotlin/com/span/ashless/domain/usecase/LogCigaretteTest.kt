@@ -28,6 +28,8 @@ class LogCigaretteTest {
         override fun observeTodayEntries(): Flow<List<CigaretteEntry>> = flowOf(emptyList())
 
         override fun observeEntriesSince(from: Instant): Flow<List<CigaretteEntry>> = flowOf(emptyList())
+
+        override fun observeMostRecentEntry(): Flow<CigaretteEntry?> = flowOf(null)
     }
 
     @Test

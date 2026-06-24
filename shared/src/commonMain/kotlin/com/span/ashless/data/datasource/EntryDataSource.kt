@@ -10,4 +10,6 @@ interface EntryDataSource {
         startMs: Long,
         endMs: Long,
     ): Flow<List<CigaretteEntryEntity>>
+
+    fun observeMostRecentEntry(): Flow<CigaretteEntryEntity?>
 }

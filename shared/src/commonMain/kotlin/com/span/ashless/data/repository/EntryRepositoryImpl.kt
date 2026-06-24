@@ -30,6 +30,9 @@ class EntryRepositoryImpl(private val dataSource: EntryDataSource) : EntryReposi
     override fun observeEntriesSince(from: Instant): Flow<List<CigaretteEntry>> =
         dataSource.observeEntriesBetween(from.toEpochMilliseconds(), Long.MAX_VALUE)
             .map { entities -> entities.map { it.toDomain() } }
+
+    override fun observeMostRecentEntry(): Flow<CigaretteEntry?> =
+        dataSource.observeMostRecentEntry().map { it?.toDomain() }
 }
 
 private fun CigaretteEntryEntity.toDomain() =

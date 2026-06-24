@@ -1,5 +1,6 @@
 package com.span.ashless.di
 
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.room.Room
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.span.ashless.data.local.AshlessDatabase
@@ -23,4 +24,10 @@ actual fun platformModule(): Module =
         }
         single { get<AshlessDatabase>().entryDao() }
         single { get<AshlessDatabase>().programDao() }
+        single {
+            val ctx = androidContext()
+            PreferenceDataStoreFactory.create(
+                produceFile = { ctx.filesDir.resolve("ashless_settings.preferences_pb") },
+            )
+        }
     }

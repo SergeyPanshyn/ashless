@@ -12,4 +12,6 @@ class RoomEntryDataSource(private val dao: CigaretteEntryDao) : EntryDataSource 
         startMs: Long,
         endMs: Long,
     ): Flow<List<CigaretteEntryEntity>> = dao.observeEntriesBetween(startMs, endMs)
+
+    override fun observeMostRecentEntry(): Flow<CigaretteEntryEntity?> = dao.observeMostRecentEntry()
 }

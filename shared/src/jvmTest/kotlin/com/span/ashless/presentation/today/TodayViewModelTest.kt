@@ -2,12 +2,15 @@ package com.span.ashless.presentation.today
 
 import com.span.ashless.domain.model.CigaretteEntry
 import com.span.ashless.domain.model.Program
+import com.span.ashless.domain.model.WakingHours
 import com.span.ashless.domain.reduction.LinearWeeklyStepDownStrategy
 import com.span.ashless.domain.reduction.ReductionStrategyRegistry
 import com.span.ashless.domain.repository.EntryRepository
 import com.span.ashless.domain.repository.ProgramRepository
+import com.span.ashless.domain.repository.SettingsRepository
 import com.span.ashless.domain.usecase.DeleteEntry
 import com.span.ashless.domain.usecase.LogCigarette
+import com.span.ashless.domain.usecase.ObservePacingTimer
 import com.span.ashless.domain.usecase.ObserveTodayState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -43,13 +46,20 @@ class TodayViewModelTest {
     private val fakeDeleteEntry = DeleteEntry(
         repository = FakeEntryRepository(onDelete = { id -> deletedId = id }),
     )
+    private val fakeObservePacingTimer = ObservePacingTimer(
+        entryRepository = FakeEntryRepository(),
+        programRepository = FakeProgramRepository(),
+        settingsRepository = FakeSettingsRepository(),
+        registry = ReductionStrategyRegistry(listOf(LinearWeeklyStepDownStrategy())),
+        ticker = flowOf(Unit),
+    )
 
     private lateinit var viewModel: TodayViewModel
 
     @BeforeTest
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        viewModel = TodayViewModel(fakeObserveTodayState, fakeLogCigarette, fakeDeleteEntry)
+        viewModel = TodayViewModel(fakeObserveTodayState, fakeLogCigarette, fakeDeleteEntry, fakeObservePacingTimer)
     }
 
     @AfterTest
@@ -136,7 +146,7 @@ private class FakeEntryRepository(
     override suspend fun log(): CigaretteEntry =
         CigaretteEntry(
             id = FAKE_ENTRY_ID,
-            smokedAt = kotlinx.datetime.Instant.fromEpochMilliseconds(0L),
+            smokedAt = Instant.fromEpochMilliseconds(0L),
         )
 
     override suspend fun delete(id: Uuid) = onDelete(id)
@@ -144,6 +154,8 @@ private class FakeEntryRepository(
     override fun observeTodayEntries(): Flow<List<CigaretteEntry>> = flowOf(emptyList())
 
     override fun observeEntriesSince(from: Instant): Flow<List<CigaretteEntry>> = flowOf(emptyList())
+
+    override fun observeMostRecentEntry(): Flow<CigaretteEntry?> = flowOf(null)
 }
 
 private class FakeProgramRepository : ProgramRepository {
@@ -163,4 +175,10 @@ private class FakeProgramRepository : ProgramRepository {
                 isActive = true,
             ),
         )
+}
+
+private class FakeSettingsRepository : SettingsRepository {
+    override fun observeWakingHours(): Flow<WakingHours> = flowOf(WakingHours.DEFAULT)
+
+    override suspend fun saveWakingHours(wakingHours: WakingHours) = Unit
 }

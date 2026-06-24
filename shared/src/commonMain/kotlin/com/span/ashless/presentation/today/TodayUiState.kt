@@ -14,5 +14,6 @@ data class TodayUiState(
     val statusStyle: TodayStatusStyle = TodayStatusStyle.NO_PROGRAM,
     val statusLabel: String = "",
     val footerText: String = "",
+    val timerText: String = "",
     val buttonState: LogButtonState = LogButtonState.Idle,
 )

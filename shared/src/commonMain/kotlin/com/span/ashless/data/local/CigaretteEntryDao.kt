@@ -21,4 +21,7 @@ interface CigaretteEntryDao {
         startMs: Long,
         endMs: Long,
     ): Flow<List<CigaretteEntryEntity>>
+
+    @Query("SELECT * FROM cigarette_entries ORDER BY timestampMs DESC LIMIT 1")
+    fun observeMostRecentEntry(): Flow<CigaretteEntryEntity?>
 }

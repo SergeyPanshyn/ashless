@@ -10,4 +10,5 @@ interface EntryRepository {
     suspend fun delete(id: Uuid)
     fun observeTodayEntries(): Flow<List<CigaretteEntry>>
     fun observeEntriesSince(from: Instant): Flow<List<CigaretteEntry>>
+    fun observeMostRecentEntry(): Flow<CigaretteEntry?>
 }
