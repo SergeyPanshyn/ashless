@@ -9,6 +9,7 @@ sealed interface LogButtonState {
 
 data class TodayUiState(
     val remainingCount: Int = 0,
+    val countLabel: String = "today",
     val ringProgress: Float = 0f,
     val statusStyle: TodayStatusStyle = TodayStatusStyle.NO_PROGRAM,
     val statusLabel: String = "",

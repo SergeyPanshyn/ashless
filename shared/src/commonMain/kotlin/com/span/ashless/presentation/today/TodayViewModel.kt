@@ -91,6 +91,7 @@ class TodayViewModel(
         return when (todayState.status) {
             DayStatus.NO_PROGRAM -> TodayUiState(
                 remainingCount = todayState.count,
+                countLabel = "today",
                 ringProgress = 0f,
                 statusStyle = TodayStatusStyle.NO_PROGRAM,
                 statusLabel = "Set up your program",
@@ -101,6 +102,7 @@ class TodayViewModel(
                 val allowance = todayState.allowance ?: 0
                 TodayUiState(
                     remainingCount = todayState.remaining ?: 0,
+                    countLabel = "left",
                     ringProgress = if (allowance > 0) {
                         (todayState.count.toFloat() / allowance).coerceIn(0f, 1f)
                     } else {
@@ -116,6 +118,7 @@ class TodayViewModel(
                 val allowance = todayState.allowance ?: 0
                 TodayUiState(
                     remainingCount = 0,
+                    countLabel = "left",
                     ringProgress = 1f,
                     statusStyle = TodayStatusStyle.OVER_LIMIT,
                     statusLabel = "${todayState.count - allowance} over today",

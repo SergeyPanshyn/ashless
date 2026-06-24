@@ -2,6 +2,7 @@ package com.span.ashless.ui.screen
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,6 +73,7 @@ private fun TodayStatusStyle.chipTextColor(s: AshlessStatusColors): Color =
 @Composable
 fun TodayScreen(
     modifier: Modifier = Modifier,
+    onSetupProgram: () -> Unit = {},
     viewModel: TodayViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -84,7 +86,8 @@ fun TodayScreen(
         modifier = modifier.fillMaxSize().padding(horizontal = 24.dp),
     ) {
         CountRing(
-            remainingCount = state.remainingCount,
+            count = state.remainingCount,
+            countLabel = state.countLabel,
             ringProgress = state.ringProgress,
             ringColor = state.statusStyle.ringColor(statusColors, primary),
         )
@@ -93,6 +96,7 @@ fun TodayScreen(
             label = state.statusLabel,
             background = state.statusStyle.chipBackground(statusColors),
             textColor = state.statusStyle.chipTextColor(statusColors),
+            onClick = if (state.statusStyle == TodayStatusStyle.NO_PROGRAM) onSetupProgram else null,
         )
         if (state.footerText.isNotEmpty()) {
             Spacer(modifier = Modifier.height(8.dp))
@@ -109,7 +113,8 @@ fun TodayScreen(
 
 @Composable
 private fun CountRing(
-    remainingCount: Int,
+    count: Int,
+    countLabel: String,
     ringProgress: Float,
     ringColor: Color,
     modifier: Modifier = Modifier,
@@ -148,12 +153,12 @@ private fun CountRing(
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = remainingCount.toString(),
+                text = count.toString(),
                 style = MaterialTheme.typography.displayLarge,
                 color = ringColor,
             )
             Text(
-                text = "left",
+                text = countLabel,
                 style = MaterialTheme.typography.labelMedium,
                 color = ringColor.copy(alpha = 0.7f),
             )
@@ -166,12 +171,15 @@ private fun StatusChip(
     label: String,
     background: Color,
     textColor: Color,
+    onClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     Surface(
         color = background,
         shape = RoundedCornerShape(999.dp),
-        modifier = modifier,
+        modifier = modifier.then(
+            if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier,
+        ),
     ) {
         Text(
             text = label,

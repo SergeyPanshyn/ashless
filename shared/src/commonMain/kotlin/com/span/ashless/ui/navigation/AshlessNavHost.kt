@@ -73,7 +73,7 @@ fun AshlessNavHost(modifier: Modifier = Modifier) {
                 .padding(innerPadding),
         ) {
             when (selectedIndex) {
-                0 -> TodayScreen()
+                0 -> TodayScreen(onSetupProgram = { selectedIndex = 3 })
                 1 -> HistoryScreen()
                 2 -> StatsScreen()
                 3 -> ProgramScreen()
